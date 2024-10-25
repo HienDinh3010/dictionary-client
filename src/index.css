@@ -1,0 +1,244 @@
+/* General body styles remain the same */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.navbar-brand {
+  color: #df3ca6;
+}
+
+.navbar-brand img {
+  width: 30px;
+  margin-right: 10px;
+}
+
+.btn {
+  font-size: 15px;
+}
+
+.btn-primary,
+.bg-primary {
+  background-color: #df3ca6 !important;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #df3ca6;
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background-color: #7430f9;
+}
+
+.btn-secondary:hover {
+  background-color: #7430f9;
+  opacity: 0.9;
+}
+
+.icon {
+  margin-right: 5px;
+}
+
+/* Search Component Styles */
+.search-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 60%;
+  margin: 20px auto;
+}
+
+.search-container label,
+.search-container input,
+.search-container button {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Flexbox for inline arrangement */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* space between label, input, and button */
+  justify-content: space-between;
+}
+
+.search-container label {
+  font-weight: bold;
+  font-size: 18px;
+  color: #333;
+}
+
+.search-container input[type="text"] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  flex: 1; /* Input grows to take up available space */
+}
+
+.search-container button {
+  padding: 10px 15px;
+  font-size: 16px;
+  background-color: #df3ca6;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-container button:hover {
+  background-color: #c53194;
+}
+
+.results {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.results h3 {
+  font-size: 20px;
+  color: #333;
+}
+
+.results p {
+  font-size: 16px;
+  color: #555;
+}
+
+.results strong {
+  color: #333;
+}
+
+/* Loading and Error styles */
+p.loading {
+  color: #df3ca6;
+  font-weight: bold;
+}
+
+p.error {
+  color: red;
+  font-weight: bold;
+}
+
+/* Container for popular searches */
+.popular-searches {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 60%;
+  margin: 20px auto;
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Columns container */
+.columns {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 10px;
+}
+
+/* Styling for the ordered list */
+.popular-searches ol {
+  padding-left: 20px;
+  text-align: left;
+  margin-top: 15px;
+  flex: 1; /* Ensure both columns take equal space */
+  padding-right: 20px;
+}
+
+.popular-searches ol li {
+  font-size: 18px;
+  color: #333;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.3s ease;
+}
+
+.popular-searches ol li:hover {
+  background-color: #f0f0f0;
+}
+
+/* Countdown timer */
+.popular-searches p {
+  font-size: 18px;
+  color: #555;
+  margin: 15px 0;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popular-searches p span {
+  font-size: 20px;
+  color: #df3ca6;
+  margin-right: 8px;
+  margin-left: 8px;
+  animation: pulse 1s infinite alternate;
+}
+
+/* Keyframes for pulse effect on countdown */
+@keyframes pulse {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+/* Styling for loading and error messages */
+.popular-searches p.loading,
+.popular-searches p.error .text-generation{
+  font-size: 18px;
+  color: #555;
+}
+
+.popular-searches p.error .text-generation{
+  color: red;
+}
+
+.pronunciation .text-generation{
+  margin-top: 20px;
+  border-top: 1px solid #df3ca6;
+  padding-top: 20px;
+}
+
+.pronunciation .text-generation h4 {
+  font-size: 18px;
+  color: #333;
+}
+
+.pronunciation .text-generation p {
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.pronunciation button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+.pronunciation button:hover {
+  color: #df3ca6;
+}
