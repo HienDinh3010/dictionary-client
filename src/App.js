@@ -4,7 +4,7 @@ import Search from "./components/Search";
 import PopularSearch from "./components/PopularSearch";
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/graphql',
+  uri: process.env.REACT_APP_GRAPHQL_URI,
   cache: new InMemoryCache(),
 })
 

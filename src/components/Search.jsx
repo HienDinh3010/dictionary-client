@@ -12,7 +12,7 @@ const SEARCH_WORD = gql`
     }
   }
 `;
-
+const backendHost = process.env.REACT_APP_BACKEND_HOST;
 const SearchComponent = () => {
   const [term, setTerm] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
@@ -42,7 +42,7 @@ const SearchComponent = () => {
   // Function to call the backend API for pronunciation
   const fetchPronunciation = async (word) => {
     try {
-      const response = await axios.post('http://localhost:4000/generate-audio', {
+      const response = await axios.post(`${backendHost}/generate-audio`, {
         input: word,
       }, {
         responseType: 'blob', // Ensure response is treated as a Blob
@@ -68,7 +68,7 @@ const SearchComponent = () => {
     setLoadingPrompt(true);
     setErrorPrompt('');
     try {
-      const response = await axios.post('http://localhost:4000/generate-text', { prompt: `Where does the word ${word} come from?` });
+      const response = await axios.post(`${backendHost}/generate-text`, { prompt: `Where does the word ${word} come from?` });
       setResult(response.data.text);
     } catch (error) {
       console.error('Error fetching text generation:', error);
