@@ -75,10 +75,29 @@ code {
   justify-content: space-between;
 }
 
-.search-container label {
+/* Add spacing between label and input group */
+.search-box label {
   font-weight: bold;
   font-size: 18px;
   color: #333;
+  margin-right: 10px;
+}
+
+/* Customize input style */
+.form-control {
+  font-size: 16px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px 0 0 5px; /* Rounds the left corners only */
+}
+
+/* Customize button style */
+.btn-primary {
+  background-color: #df3ca6; /* Custom button color */
+  border: none;
+  border-radius: 0 5px 5px 0; /* Rounds the right corners only */
+  font-size: 16px;
+  padding: 10px 15px;
 }
 
 .search-container input[type="text"] {

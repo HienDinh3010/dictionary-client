@@ -103,14 +103,19 @@ const SearchComponent = () => {
   return (
     <div className="search-container">
       <div className="search-box">
-        <label>Term:</label>
-        <input
-          type="text"
-          value={term}
-          onChange={handleTermChange}
-          placeholder="Enter a word..."
-        />
-        <button onClick={handleSearch}>Lookup</button>
+        <div className='input-group'>
+          <label>Term:</label>
+          <input
+            type="text"
+            value={term}
+            onChange={handleTermChange}
+            placeholder="Enter a word..."
+            className="form-control"
+          />
+          <button className="btn btn-primary" onClick={handleSearch}>
+            Lookup
+          </button>
+        </div>
       </div>
 
       {/* Display loading message */}
