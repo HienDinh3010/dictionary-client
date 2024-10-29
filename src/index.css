@@ -261,3 +261,29 @@ p.error {
 .pronunciation button:hover {
   color: #df3ca6;
 }
+
+.generated-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 40%; /* Controls max width of container */
+  margin: 20px auto;
+}
+
+.generated-image {
+  max-width: 100%; /* Makes image responsive */
+  height: auto; /* Maintains aspect ratio */
+  border-radius: 8px; /* Optional: Adds rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Adds a shadow for depth */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.generated-image:hover {
+  transform: scale(1.05); /* Optional: Slight zoom effect on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Deepens shadow on hover */
+}

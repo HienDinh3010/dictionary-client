@@ -19,6 +19,11 @@ const SearchComponent = () => {
   const [phonetic, setPhonetic] = useState('');
   const [executeSearch, { data, loading, error }] = useLazyQuery(SEARCH_WORD);
 
+  //Image generation
+  const [loadingImage, setLoadingImage] = useState(false);
+  const [errorImage, setErrorImage] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+
   // Text to speech
   const [isPlaying, setIsPlaying] = useState(false); // State to track if audio is playing
   const audioRef = React.useRef(null); // Reference to the audio element
@@ -28,14 +33,50 @@ const SearchComponent = () => {
   const [loadingPrompt, setLoadingPrompt] = useState(false);
   const [errorPrompt, setErrorPrompt] = useState('');
 
+  // Example generation
+  const [example, setExample] = useState('');
+  const [loadingExample, setLoadingExample] = useState(false);
+  const [errorExample, setErrorExample] = useState('');
+
   // Handle search submission
   const handleSearch = async () => {
+
     if (term.trim()) {
       executeSearch({ variables: { word: term } });
-      // Call backend API to get pronunciation
+
+      await fetchImage(term);
       await fetchPronunciation(term);
-      // Immediately fetch the text generation
       await fetchTextGeneration(term);
+      await fetchTextExample(term);
+    }
+  };
+
+  // Function to call the backend API for image generation
+  const fetchImage = async (prompt) => {
+    setLoadingImage(true);
+    setErrorImage('');
+    try {
+      // Send a POST request to generate an image based on the prompt
+      const response = await axios.post(`${backendHost}/generate-image`, {
+        input: `Cute image about ${prompt}`,
+      });
+
+      // Retrieve the image URL from the response
+      const imageUrl = response.data.imageUrl;
+      console.log(imageUrl);
+
+      // Set the image URL to display the generated image
+      if (!imageUrl) {
+        setImageUrl('https://img.freepik.com/free-vector/colorful-blank-reminder-notes-vector-set_53876-62084.jpg?t=st=1730057908~exp=1730061508~hmac=51311df36e8e53afd925cf3158df41de29ada767d320e9ba9e4c94bb3d836270&w=740');
+      } else {
+        setImageUrl(imageUrl);
+      }
+
+    } catch (err) {
+      console.error('Error fetching image:', err);
+      setErrorImage(err);
+    } finally {
+      setLoadingImage(false);
     }
   };
 
@@ -78,6 +119,21 @@ const SearchComponent = () => {
     }
   };
 
+  const fetchTextExample = async (word) => {
+    setLoadingExample(true);
+    setErrorExample('');
+    try {
+      const response = await axios.post(`${backendHost}/generate-text`, { prompt: `Funny story about ${word}?` });
+      setExample(response.data.text);
+      console.log(response.data.text);
+    } catch (error) {
+      console.error('Error fetching example generation:', error);
+      setErrorExample('Error generating example. Please try again.');
+    } finally {
+      setLoadingExample(false);
+    }
+  };
+
   const playAudio = async () => {
     try {
       audioRef.current.src = audioUrl; // Set audio source to the blob URL
@@ -93,11 +149,14 @@ const SearchComponent = () => {
   };
 
   const handleTermChange = (e) => {
-    setTerm(e.target.value);
     setAudioUrl('');
     setPhonetic('');
     setResult('');
     setErrorPrompt('');
+    setImageUrl('');
+    setExample('');
+    setErrorExample('');
+    setTerm(e.target.value);
   }
 
   return (
@@ -124,7 +183,6 @@ const SearchComponent = () => {
       {/* Display error message if the search fails */}
       {error && <p className="error">Error fetching word: {error.message}</p>}
 
-      {/* Display search results */}
       {data && (
         <div className="results">
           <h3>Search Results:</h3>
@@ -139,6 +197,14 @@ const SearchComponent = () => {
           ) : (
             <p>No results found for "{term}"</p>
           )}
+            {/* Display search results */}
+          {loadingImage && <p className="loading">Generating image...</p>}
+          {errorImage && <p className="error">{errorImage}</p>}
+          {imageUrl && 
+          <div className="generated-image-container">
+            <img src={imageUrl} alt="Generated" className="generated-image" />
+          </div>}
+
         </div>
       )}
 
@@ -165,6 +231,16 @@ const SearchComponent = () => {
         <div className="text-generation">
           <h4>Where does the "{term}" come from?</h4>
           <p>{result}</p>
+        </div>
+      )}
+
+      {/* Example Generation Section */}
+      {loadingExample && <p className="loading">Generating text...</p>}
+      {errorExample && <p className="error">{errorExample}</p>}
+      {example && (
+        <div className="text-generation">
+          <h4>Funny story about the "{term}" :)</h4>
+          <p>{example}</p>
         </div>
       )}
     </div>
