@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { gql, useLazyQuery } from '@apollo/client';
 import axios from 'axios';
 
@@ -18,6 +18,12 @@ const SearchComponent = () => {
   const [audioUrl, setAudioUrl] = useState('');
   const [phonetic, setPhonetic] = useState('');
   const [executeSearch, { data, loading, error }] = useLazyQuery(SEARCH_WORD);
+  const [queryData, setQueryData] = useState(null); // local state for resetting data
+  useEffect(() => {
+    if (data) {
+      setQueryData(data);  // update local state with the new query result
+    }
+  }, [data]);
 
   //Image generation
   const [loadingImage, setLoadingImage] = useState(false);
@@ -149,6 +155,7 @@ const SearchComponent = () => {
   };
 
   const handleTermChange = (e) => {
+    setQueryData(null);
     setAudioUrl('');
     setPhonetic('');
     setResult('');
