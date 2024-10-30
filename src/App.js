@@ -2,6 +2,7 @@ import Header from "./components/Header";
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
 import Search from "./components/Search";
 import PopularSearch from "./components/PopularSearch";
+import Footer from "./components/Footer";
 
 const client = new ApolloClient({
   uri: process.env.REACT_APP_GRAPHQL_URI,
@@ -15,6 +16,7 @@ function App() {
         <Header />
         <Search/>
         <PopularSearch />
+        <Footer />
       </ApolloProvider>
     </>
   );

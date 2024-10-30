@@ -246,7 +246,7 @@ const SearchComponent = () => {
       {/* Display error message if the search fails */}
       {error && <p className="error">Error fetching word: {error.message}</p>}
 
-      {data && (
+      {queryData && (
         <div className="results">
           <h3>Search Results:</h3>
           {data.search.length > 0 ? (

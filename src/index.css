@@ -287,3 +287,21 @@ p.error {
   transform: scale(1.05); /* Optional: Slight zoom effect on hover */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Deepens shadow on hover */
 }
+.footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  background-color: #f9f9f9; /* Light background */
+  color: #333; /* Text color */
+  padding: 20px 0; /* Padding for top and bottom */
+}
+
+.footer a {
+  color: #df3ca6; /* Link color */
+  text-decoration: none; /* Remove underline from link */
+  margin-left: 5px; /* Add some space between text and link */
+}
+
+.footer a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
