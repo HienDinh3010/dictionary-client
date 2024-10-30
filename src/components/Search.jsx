@@ -16,9 +16,11 @@ const backendHost = process.env.REACT_APP_BACKEND_HOST;
 const SearchComponent = () => {
   const [term, setTerm] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
+  const [audioBuffer, setAudioBuffer] = useState(null);
   const [phonetic, setPhonetic] = useState('');
   const [executeSearch, { data, loading, error }] = useLazyQuery(SEARCH_WORD);
   const [queryData, setQueryData] = useState(null); // local state for resetting data
+
   useEffect(() => {
     if (data) {
       setQueryData(data);  // update local state with the new query result
@@ -35,9 +37,9 @@ const SearchComponent = () => {
   const audioRef = React.useRef(null); // Reference to the audio element
 
   // Text generation
-  const [result, setResult] = useState('');
-  const [loadingPrompt, setLoadingPrompt] = useState(false);
-  const [errorPrompt, setErrorPrompt] = useState('');
+  const [termHistory, setTermHistory] = useState('');
+  const [loadingTermHistory, setLoadingTermHistory] = useState(false);
+  const [errorTermHistory, setErrorTermHistory] = useState('');
 
   // Example generation
   const [example, setExample] = useState('');
@@ -50,12 +52,63 @@ const SearchComponent = () => {
     if (term.trim()) {
       executeSearch({ variables: { word: term } });
 
-      await fetchImage(term);
-      await fetchPronunciation(term);
-      await fetchTextGeneration(term);
-      await fetchTextExample(term);
+      await searchTerm(term.toLowerCase());
     }
   };
+
+  const searchTerm = async (term) => {
+    try {
+      //Send a POST request to find the term from search history
+      const response = await axios.post(`${backendHost}/search`, {
+        term: term,
+      });
+      const result = response.data;
+      console.log(`result ${result.message}`);
+      if (result.found) {
+        console.log("found term history from db")
+        setImageUrl(result.imageUrl ? result.imageUrl : process.env.DEFAULT_IMG);
+
+        const arrayBuffer =  result.audioBuffer;
+        const audioBlob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        setAudioUrl(audioUrl);
+
+        setTermHistory(result.termHistory);
+
+        setExample(result.example);
+      } else {
+        console.log("fetching openai");
+        try {
+          // Wait for all fetch functions to complete and store the results
+          const [imageResult, pronunciationResult, textGenerationResult, textExampleResult] = await Promise.all([
+              fetchImage(term),
+              fetchPronunciation(term),
+              fetchTextGeneration(term),
+              fetchTextExample(term),
+          ]);
+      
+          // Assuming these functions return the values you need
+          const audioBuffer = pronunciationResult;
+          const imageUrl = imageResult;
+          const termHistory = textGenerationResult;
+          const example = textExampleResult;
+      
+          // Now make the POST request with populated data
+          await axios.post(`${backendHost}/new-search`, {
+              term: term,
+              audioBuffer: audioBuffer,
+              imageUrl: imageUrl,
+              termHistory: termHistory,
+              example: example
+          });
+        } catch (error) {
+            console.log(`Error adding new search: ${error}`);
+        }      
+      }
+    } catch (err) {
+      console.log(`error search term`, err);
+    }
+  }
 
   // Function to call the backend API for image generation
   const fetchImage = async (prompt) => {
@@ -72,12 +125,8 @@ const SearchComponent = () => {
       console.log(imageUrl);
 
       // Set the image URL to display the generated image
-      if (!imageUrl) {
-        setImageUrl('https://img.freepik.com/free-vector/colorful-blank-reminder-notes-vector-set_53876-62084.jpg?t=st=1730057908~exp=1730061508~hmac=51311df36e8e53afd925cf3158df41de29ada767d320e9ba9e4c94bb3d836270&w=740');
-      } else {
-        setImageUrl(imageUrl);
-      }
-
+      setImageUrl(imageUrl ? imageUrl : process.env.DEFAULT_IMG);
+      return imageUrl;
     } catch (err) {
       console.error('Error fetching image:', err);
       setErrorImage(err);
@@ -102,9 +151,14 @@ const SearchComponent = () => {
       
       setAudioUrl(audioUrl);
 
+      // Convert Blob to ArrayBuffer
+      const arrayBuffer = await audioBlob.arrayBuffer();
+      setAudioBuffer(new Uint8Array(arrayBuffer));
+
       // Set a sample phonetic transcription (you might update this with more accurate data)
       const phonetic = word; // You can enhance this logic to fetch actual phonetics
       setPhonetic(phonetic);
+      return arrayBuffer;
     } catch (err) {
       console.error('Error fetching pronunciation:', err);
     }
@@ -112,16 +166,17 @@ const SearchComponent = () => {
 
   // Function to call the backend API for text generation
   const fetchTextGeneration = async (word) => {
-    setLoadingPrompt(true);
-    setErrorPrompt('');
+    setLoadingTermHistory(true);
+    setErrorTermHistory('');
     try {
       const response = await axios.post(`${backendHost}/generate-text`, { prompt: `Where does the word ${word} come from?` });
-      setResult(response.data.text);
+      setTermHistory(response.data.text);
+      return response.data.text;
     } catch (error) {
       console.error('Error fetching text generation:', error);
-      setErrorPrompt('Error generating text. Please try again.');
+      setErrorTermHistory('Error generating text. Please try again.');
     } finally {
-      setLoadingPrompt(false);
+      setLoadingTermHistory(false);
     }
   };
 
@@ -132,6 +187,7 @@ const SearchComponent = () => {
       const response = await axios.post(`${backendHost}/generate-text`, { prompt: `Funny story about ${word}?` });
       setExample(response.data.text);
       console.log(response.data.text);
+      return response.data.text;
     } catch (error) {
       console.error('Error fetching example generation:', error);
       setErrorExample('Error generating example. Please try again.');
@@ -158,8 +214,8 @@ const SearchComponent = () => {
     setQueryData(null);
     setAudioUrl('');
     setPhonetic('');
-    setResult('');
-    setErrorPrompt('');
+    setTermHistory('');
+    setErrorTermHistory('');
     setImageUrl('');
     setExample('');
     setErrorExample('');
@@ -204,13 +260,6 @@ const SearchComponent = () => {
           ) : (
             <p>No results found for "{term}"</p>
           )}
-            {/* Display search results */}
-          {loadingImage && <p className="loading">Generating image...</p>}
-          {errorImage && <p className="error">{errorImage}</p>}
-          {imageUrl && 
-          <div className="generated-image-container">
-            <img src={imageUrl} alt="Generated" className="generated-image" />
-          </div>}
 
         </div>
       )}
@@ -232,12 +281,12 @@ const SearchComponent = () => {
       )}
 
       {/* Text Generation Section */}
-      {loadingPrompt && <p className="loading">Generating text...</p>}
-      {errorPrompt && <p className="error">{errorPrompt}</p>}
-      {result && (
+      {loadingTermHistory && <p className="loading">Generating text...</p>}
+      {errorTermHistory && <p className="error">{errorTermHistory}</p>}
+      {termHistory && (
         <div className="text-generation">
           <h4>Where does the "{term}" come from?</h4>
-          <p>{result}</p>
+          <p>{termHistory}</p>
         </div>
       )}
 
@@ -250,6 +299,14 @@ const SearchComponent = () => {
           <p>{example}</p>
         </div>
       )}
+
+      {/* Display search results */}
+      {loadingImage && <p className="loading">Generating image...</p>}
+      {errorImage && <p className="error">{errorImage}</p>}
+      {imageUrl && 
+      <div className="generated-image-container">
+        <img src={imageUrl} alt="Generated" className="generated-image" />
+      </div>}
     </div>
   );
 };
