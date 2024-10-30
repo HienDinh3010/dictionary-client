@@ -50,9 +50,9 @@ const SearchComponent = () => {
   const handleSearch = async () => {
 
     if (term.trim()) {
-      executeSearch({ variables: { word: term } });
+      executeSearch({ variables: { word: term.trim().toLowerCase() } });
 
-      await searchTerm(term.toLowerCase());
+      await searchTerm(term.trim().toLowerCase());
     }
   };
 
