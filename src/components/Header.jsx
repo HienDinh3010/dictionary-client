@@ -7,7 +7,7 @@ export default function Header() {
             <a className='navbar-brand' href="/">
                 <div className="d-flex">
                     <img src={logo} alt="logo" className="mr-2" />
-                    <div>Your WordWhimsy Dictionary: "word" & "whimsy" for a fun and playful vibe</div>
+                    <div>Your WordWhimsy Dictionary: a fun and playful vibe</div>
                 </div>
             </a>
         </div>
